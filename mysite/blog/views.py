@@ -9,6 +9,11 @@ from taggit.models import Tag
 from django.db.models import Count
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def dashboard(request):
+    return render(request,'blog/account/dashboard.html',)
 
 def user_login(request):
     if request.method=='POST':
@@ -35,6 +40,7 @@ class PostListViev(ListView):
     paginate_by = 3
     template_name = 'blog/post/list.html'
 
+@login_required
 def post_list(request, tag_slug=None):
     object_list = Post.objects.all()
     tag = None
