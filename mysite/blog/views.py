@@ -10,10 +10,29 @@ from django.db.models import Count
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from .forms import PostForm
+@login_required
+def post_add(request):
+    user=request.user
+    if request.method=='POST':
+        form=PostForm(request.POST,request.FILES)
+        if form.is_valid():
+            post=form.save(commit=False)
+            post.author=user
+            print(post)
+            post.save()
+    else:
+        form=PostForm()
+
+    return render(request, 'blog/account/post_add.html',{'form':form})
 
 @login_required
 def dashboard(request):
-    return render(request,'blog/account/dashboard.html',)
+    user=request.user
+    posts_pub=Post.objects.filter(author=user,status='published')
+    posts_draft=Post.objects.filter(author=user,status='draft')
+    return render(request,'blog/account/dashboard.html',{'posts_pub':posts_pub,
+                                                         'posts_draft':posts_draft})
 
 def user_login(request):
     if request.method=='POST':
