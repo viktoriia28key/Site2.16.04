@@ -1,5 +1,10 @@
-from .models import Comment, Post
+from .models import Comment, Post, PostPoint
 from django import forms
+
+class PostPointForm(forms.ModelForm):
+    class Meta:
+        model=PostPoint
+        fields=('post_header','post_point_text','post_images')
 
 class PostForm(forms.ModelForm):
     class Meta:
