@@ -1,17 +1,54 @@
 from django.shortcuts import render ,get_object_or_404
 from django.core.paginator import Paginator, EmptyPage,PageNotAnInteger
-# Create your views here.
-from .models import Post, PostPoint
+from .models import Post, PostPoint, Comment, User
 from django.views.generic import ListView
-from .models import Comment
-from .forms import CommentForm, LoginForm
+from .forms import CommentForm, LoginForm, PostForm, PostPointForm, UserCreateForm
 from taggit.models import Tag
 from django.db.models import Count
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import PostForm, PostPointForm
 from django.shortcuts import redirect
+
+def sign_up(request):
+    user_form=UserCreateForm()
+    if request.method == 'POST':
+        user_form=UserCreateForm(request.POST)
+        if user_form.is_valid():
+            new_user=User.objects.create_user(**user_form.cleaned_data)
+            new_user.save()
+            login(request, authenticate(username=user_form.cleaned_data['username'],
+                                        password=user_form.cleaned_data['password']))
+            return redirect('blog:post_list')
+    return render(request,'registration/sign_up.html',
+                                {'user_form':user_form})
+
+@login_required
+def post_point_delete(request, post_point_id):
+    try:
+        post_point = get_object_or_404(PostPoint,
+                                       id=post_point_id)
+        post_point.delete()
+        return redirect('blog:post_point_list', post_id=post_point.post.id)
+    except PostPoint.DoesNotExist:
+        return redirect('blog:post_list')
+
+@login_required
+def post_point_edit(request, post_point_id):
+    post_point = get_object_or_404(PostPoint, id=post_point_id)
+    post = get_object_or_404(Post, id=post_point.post.id)
+    post_point_edit_form = PostPointForm(instance=post_point)
+    if request.method == 'POST':
+        post_point_edit_form = PostPointForm(request.POST, request.FILES,
+                                             instance=post_point)
+        if post_point_edit_form.is_valid():
+            post_point_edit_form.save()
+    return render(request, 'blog/account/post_point_edit.html',
+                  {'form': post_point_edit_form,
+                   'post_point': post_point,
+                   'post': post})
+
+
 
 @login_required
 def post_point_add(request, post_id):
