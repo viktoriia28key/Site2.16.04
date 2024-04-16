@@ -1,5 +1,16 @@
-from .models import Comment, Post
+from .models import Comment, Post, PostPoint, User
 from django import forms
+
+class UserCreateForm(forms.ModelForm):
+    password=forms.CharField(max_length=40,widget=forms.PasswordInput())
+    class Meta:
+        model=User
+        fields=('first_name','last_name','username','email','password')
+
+class PostPointForm(forms.ModelForm):
+    class Meta:
+        model=PostPoint
+        fields=('post_header','post_point_text','post_images')
 
 class PostForm(forms.ModelForm):
     class Meta:
