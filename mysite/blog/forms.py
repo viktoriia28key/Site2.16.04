@@ -1,14 +1,27 @@
 from .models import Comment, Post, PostPoint, User
 from django import forms
 
-class UserCreateForm(forms.ModelForm):
-    password = forms.CharField(max_length=40, widget=forms.PasswordInput())
+class SearchForm(forms.Form):
+    query=forms.CharField(widget=forms.TextInput(attrs={
+        'class':'form-control mr-sm-2',
+        'type':'search',
+        'placeholder':'Search',
+        'aria-label':'Search'
+    }))
 
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=('first_name','last_name',
+                'username','email')
+
+class UserCreateForm(forms.ModelForm):
+    password=forms.CharField(max_length=40,
+                            widget=forms.PasswordInput())
     class Meta:
         model = User
-        fields = ('first_name', 'last_name',
-                  'username', 'email', 'password')
-
+        fields = ('first_name', 'last_name', 'username',
+                  'email', 'password')
 
 class PostPointForm(forms.ModelForm):
     class Meta:

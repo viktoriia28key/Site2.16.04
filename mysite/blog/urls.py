@@ -16,5 +16,6 @@ urlpatterns = [
     path('post_point_add/<int:post_id>/', views.post_point_add , name='post_point_add'),
     path('post_point_edit/<int:post_point_id>/', views.post_point_edit, name='post_point_edit'),
     path('post_point_delete/<int:post_point_id>/', views.post_point_delete, name='post_point_delete'),
-    path('sign-up/', views.sign_up, name='sign-up'),
+    path('sign-up/',views.sign_up, name='sign-up'),
+path('profile/', views.edit_profile, name='edit_profile'),
 ]

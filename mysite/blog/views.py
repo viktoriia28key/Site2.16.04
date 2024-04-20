@@ -9,7 +9,23 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from .forms import UserEditForm, SearchForm
 
+
+
+@login_required
+def edit_profile(request):
+    user_form = UserEditForm(
+        instance=request.user)
+    if request.method == 'POST':
+        user_form = UserEditForm(
+            request.POST,
+            instance=request.user)
+        if user_form.is_valid():
+            user_form.save()
+    return render(request,
+                  'blog/account/profile.html',
+                  {'user_form': user_form})
 def sign_up(request):
     user_form=UserCreateForm()
     if request.method == 'POST':
